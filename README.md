@@ -8,6 +8,7 @@ It currently support parsing the:
 + program headers
 + section headers
 + dynamic section
++ dynamic symbol table
 
 Run `elfy -H` to print a description of the command-line options. I plan to add more options soon.
 

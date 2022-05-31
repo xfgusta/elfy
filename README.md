@@ -10,7 +10,7 @@ It currently support parsing the:
 + dynamic section
 + dynamic symbol table
 
-Run `elfy -H` to print a description of the command-line options. I plan to add more options soon.
+Run `elfy --help` to print a description of the command-line options. I plan to add more options soon.
 
 ## Building from source
 

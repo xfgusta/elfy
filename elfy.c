@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -19,7 +18,20 @@
 #define C_YELLOW "\033[33m"
 #define C_END    "\033[0m"
 
-bool color_opt = false;
+int file_header_opt, program_headers_opt, section_headers_opt,
+    dynamic_section_opt, dynamic_symtab_opt, color_opt, help_opt, version_opt;
+
+struct option long_opts[] = {
+    {"file-header",     no_argument, &file_header_opt,     1},
+    {"program-headers", no_argument, &program_headers_opt, 1},
+    {"section-headers", no_argument, &section_headers_opt, 1},
+    {"dynamic",         no_argument, &dynamic_section_opt, 1},
+    {"dynsyms",         no_argument, &dynamic_symtab_opt,  1},
+    {"color",           no_argument, &color_opt,           1},
+    {"help",            no_argument, &help_opt,            1},
+    {"version",         no_argument, &version_opt,         1},
+    {0, 0, 0, 0}
+};
 
 // length of the longest field name (used by print_field)
 int field_max_len = 0;
@@ -1672,53 +1684,41 @@ void usage(FILE *stream) {
     fprintf(stream,
            "Usage: elfy [option] FILE\n\n"
            "Options:\n"
-           "  -h        display the ELF file header\n"
-           "  -p        display the program headers\n"
-           "  -s        display the section headers\n"
-           "  -d        display the dynamic section\n"
-           "  -D        display the dynamic symbol table\n"
-           "  -c        colored output\n"
-           "  -H        display this information\n"
-           "  -v        display the version number of elfy\n\n"
+           "  -h, --file-header        display the ELF file header\n"
+           "  -p, --program-headers    display the program headers\n"
+           "  -s, --section-headers    display the section headers\n"
+           "  -d, --dynamic            display the dynamic section\n"
+           "  --dynsyms                display the dynamic symbol table\n"
+           "  -c, --color              colored output\n"
+           "  --help                   display this information\n"
+           "  --version                display the version number of elfy\n\n"
            "Report bugs to <https://github.com/xfgusta/elfy/issues>\n");
 }
 
 int main(int argc, char **argv) {
     int opt;
-    bool file_header_opt = false;
-    bool program_headers_opt = false;
-    bool section_headers_opt = false;
-    bool dynamic_section_opt = false;
-    bool dynamic_symtab_opt = false;
+    int opt_index = 0;
     char *filename;
     Elf *elf;
     int fd;
 
-    while((opt = getopt(argc, argv, "HvhcpsdD")) != -1) {
+    while((opt = getopt_long(argc, argv, "hpsdc", long_opts,
+                             &opt_index)) != -1) {
         switch(opt) {
-            case 'H':
-                usage(stdout);
-                exit(0);
-            case 'v':
-                printf("%s\n", ELFY_VERSION);
-                exit(0);
-            case 'c':
-                color_opt = true;
-                break;
             case 'h':
-                file_header_opt = true;
+                file_header_opt = 1;
                 break;
             case 'p':
-                program_headers_opt = true;
+                program_headers_opt = 1;
                 break;
             case 's':
-                section_headers_opt = true;
+                section_headers_opt = 1;
                 break;
             case 'd':
-                dynamic_section_opt = true;
+                dynamic_section_opt = 1;
                 break;
-            case 'D':
-                dynamic_symtab_opt = true;
+            case 'c':
+                color_opt = 1;
                 break;
             case '?':
                 exit(1);
@@ -1729,9 +1729,18 @@ int main(int argc, char **argv) {
 
     // none of the options were used
     if(!(file_header_opt || program_headers_opt || section_headers_opt ||
-         dynamic_section_opt || dynamic_symtab_opt)){
+         dynamic_section_opt || dynamic_symtab_opt || color_opt || help_opt ||
+         version_opt)) {
         usage(stderr);
         exit(1);
+    }
+
+    if(help_opt) {
+        usage(stdout);
+        exit(0);
+    } else if(version_opt) {
+        printf("%s\n", ELFY_VERSION);
+        exit(0);
     }
 
     if(!argv[optind]) {

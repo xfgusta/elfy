@@ -26,7 +26,7 @@ struct option long_opts[] = {
     {"program-headers", no_argument, &program_headers_opt, 1},
     {"section-headers", no_argument, &section_headers_opt, 1},
     {"dynamic",         no_argument, &dynamic_section_opt, 1},
-    {"dynsyms",         no_argument, &dynamic_symtab_opt,  1},
+    {"dyn-syms",        no_argument, &dynamic_symtab_opt,  1},
     {"color",           no_argument, &color_opt,           1},
     {"help",            no_argument, &help_opt,            1},
     {"version",         no_argument, &version_opt,         1},
@@ -1627,7 +1627,7 @@ void show_dynamic_section(Elf *elf) {
     }
 }
 
-// display the dynamic symbol table (option -D)
+// display the dynamic symbol table (option --dyn-syms)
 void show_dynamic_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
 
@@ -1798,7 +1798,7 @@ void usage(FILE *stream) {
            "  -p, --program-headers    display the program headers\n"
            "  -s, --section-headers    display the section headers\n"
            "  -d, --dynamic            display the dynamic section\n"
-           "  --dynsyms                display the dynamic symbol table\n"
+           "  --dyn-syms               display the dynamic symbol table\n"
            "  -c, --color              colored output\n"
            "  --help                   display this information\n"
            "  --version                display the version number of elfy\n\n"

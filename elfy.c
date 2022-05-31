@@ -1492,20 +1492,59 @@ void show_dynamic_section(Elf *elf) {
 
             // integer value
             print_field("d_val", NULL);
-            if(color_opt)
-                printf(C_GREEN "%#lx" C_END, dyn.d_un.d_val);
-            else
-                printf("%#lx", dyn.d_un.d_val);
+            switch(dyn.d_tag) {
+                // print library name
+                case DT_NEEDED:
+                case DT_SONAME:
+                    if(color_opt)
+                        printf(C_GREEN "%#lx" C_END, dyn.d_un.d_val);
+                    else
+                        printf("%#lx", dyn.d_un.d_val);
 
-            // print library name
-            if(dyn.d_tag == DT_NEEDED || dyn.d_tag == DT_SONAME) {
-                name = elf_strptr(elf, shdr.sh_link, dyn.d_un.d_val);
-                if(!name || *name == '\0')
-                    putchar('\n');
-                else
-                    printf(" (%s)\n", name);
-            } else
-                putchar('\n');
+                    if(dyn.d_tag == DT_NEEDED || dyn.d_tag == DT_SONAME) {
+                        name = elf_strptr(elf, shdr.sh_link, dyn.d_un.d_val);
+                        if(!name || *name == '\0')
+                            putchar('\n');
+                        else
+                            printf(" (%s)\n", name);
+                    } else
+                        putchar('\n');
+
+                    break;
+                // print size/count/version/number of ...
+                case DT_PLTRELSZ:
+                case DT_RELASZ:
+                case DT_RELAENT:
+                case DT_STRSZ:
+                case DT_SYMENT:
+                case DT_RELSZ:
+                case DT_RELENT:
+                case DT_INIT_ARRAYSZ:
+                case DT_FINI_ARRAYSZ:
+                case DT_PREINIT_ARRAYSZ:
+                case DT_MOVEENT:
+                case DT_MOVESZ:
+                case DT_VERSYM:
+                case DT_RELACOUNT:
+                case DT_RELCOUNT:
+                case DT_GNU_CONFLICTSZ:
+                case DT_GNU_LIBLISTSZ:
+                case DT_SYMINSZ:
+                case DT_SYMINENT:
+                case DT_VERDEFNUM:
+                case DT_VERNEEDNUM:
+                    if(color_opt)
+                        printf(C_GREEN "%ld\n" C_END, dyn.d_un.d_val);
+                    else
+                        printf("%ld\n", dyn.d_un.d_val);
+
+                    break;
+                default:
+                    if(color_opt)
+                        printf(C_GREEN "%#lx\n" C_END, dyn.d_un.d_val);
+                    else
+                        printf("%#lx\n", dyn.d_un.d_val);
+            }
 
             // stop when it's the end of the dynamic section
             if(dyn.d_tag == DT_NULL)

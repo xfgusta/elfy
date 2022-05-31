@@ -10,7 +10,7 @@
 #include <libelf.h>
 #include <gelf.h>
 
-#define ELFY_VERSION "elfy-v0.1.0"
+#define ELFY_VERSION "0.1.0"
 
 #define TAB      "    "
 #define C_RED    "\033[31m"

@@ -1524,7 +1524,6 @@ void show_dynamic_section(Elf *elf) {
                 case DT_PREINIT_ARRAYSZ:
                 case DT_MOVEENT:
                 case DT_MOVESZ:
-                case DT_VERSYM:
                 case DT_RELACOUNT:
                 case DT_RELCOUNT:
                 case DT_GNU_CONFLICTSZ:

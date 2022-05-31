@@ -855,7 +855,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFOSABI_NETBSD", "NetBSD");
             break;
         case ELFOSABI_GNU:
-            print_field_info("ELFOSABI_GNU", "Object uses GNU ELF extensions");
+            print_field_info("ELFOSABI_GNU", "object uses GNU ELF extensions");
             break;
         case ELFOSABI_SOLARIS:
             print_field_info("ELFOSABI_SOLARIS", "Sun Solaris");
@@ -885,7 +885,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFOSABI_ARM", "ARM");
             break;
         case ELFOSABI_STANDALONE:
-            print_field_info("ELFOSABI_STANDALONE", "Standalone (embedded) application");
+            print_field_info("ELFOSABI_STANDALONE", "standalone (embedded) application");
             break;
         default:
             if(color_opt)

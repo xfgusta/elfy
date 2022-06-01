@@ -25,3 +25,7 @@ git clone https://github.com/xfgusta/elfy
 cd elfy
 make
 ```
+
+## Screenshot
+
+![screenshot](screenshot.png)

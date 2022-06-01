@@ -1538,78 +1538,58 @@ void show_dynamic_section(Elf *elf) {
                         printf("%ld\n", dyn.d_un.d_val);
                     break;
                 // parse flags
-                case DT_FLAGS: {
-                    int first = 1;
-                    unsigned long flags = dyn.d_un.d_val;
+                case DT_FLAGS:
+                    {
+                        int first = 1;
+                        unsigned long flags = dyn.d_un.d_val;
 
-                    if(color_opt)
-                        printf("%s", C_GREEN);
+                        if(color_opt)
+                            printf("%s", C_GREEN);
 
-                    while(flags) {
-                        unsigned long flag;
+                        while(flags) {
+                            unsigned long flag;
 
-                        flag = flags & -flags;
-                        flags &= ~flag;
+                            flag = flags & -flags;
+                            flags &= ~flag;
 
-                        if(first)
-                            first = 0;
-                        else {
-                            if(color_opt)
-                                printf(C_GREEN " | " C_END);
+                            if(first)
+                                first = 0;
                             else
                                 printf(" | ");
-                        }
 
-                        switch(flag) {
-                            // object may use DF_ORIGIN
-                            case DF_ORIGIN:
-                                if(color_opt)
-                                    printf(C_GREEN "DF_ORIGIN" C_END);
-                                else
+                            switch(flag) {
+                                // object may use DF_ORIGIN
+                                case DF_ORIGIN:
                                     printf("DF_ORIGIN");
-                                break;
-                            // symbol resolutions starts here
-                            case DF_SYMBOLIC:
-                                if(color_opt)
-                                    printf(C_GREEN "DF_SYMBOLIC" C_END);
-                                else
+                                    break;
+                                // symbol resolutions starts here
+                                case DF_SYMBOLIC:
                                     printf("DF_SYMBOLIC");
-                                break;
-                            // object contains text relocations
-                            case DF_TEXTREL:
-                                if(color_opt)
-                                    printf(C_GREEN "DF_TEXTREL" C_END);
-                                else
+                                    break;
+                                // object contains text relocations
+                                case DF_TEXTREL:
                                     printf("DF_TEXTREL");
-                                break;
-                            // no lazy binding for this object
-                            case DF_BIND_NOW:
-                                if(color_opt)
-                                    printf(C_GREEN "DF_BIND_NOW" C_END);
-                                else
+                                    break;
+                                // no lazy binding for this object
+                                case DF_BIND_NOW:
                                     printf("DF_BIND_NOW");
-                                break;
-                            // module uses the static TLS model
-                            case DF_STATIC_TLS:
-                                if(color_opt)
-                                    printf(C_GREEN "DF_STATIC_TLS" C_END);
-                                else
+                                    break;
+                                // module uses the static TLS model
+                                case DF_STATIC_TLS:
                                     printf("DF_STATIC_TLS");
-                                break;
-                            default:
-                                // the flag is unknown
-                                if(color_opt)
-                                    printf(C_GREEN "%#lx" C_END,
-                                           dyn.d_un.d_val);
-                                else
+                                    break;
+                                default:
+                                    // the flag is unknown
                                     printf("%#lx", dyn.d_un.d_val);
+                            }
                         }
+
+                        if(color_opt)
+                            printf("%s", C_END);
+
+                        putchar('\n');
                     }
-
-                    putchar('\n');
-
                     break;
-                }
                 default:
                     if(color_opt)
                         printf(C_GREEN "%#lx\n" C_END, dyn.d_un.d_val);

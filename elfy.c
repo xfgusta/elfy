@@ -1590,6 +1590,153 @@ void show_dynamic_section(Elf *elf) {
                         putchar('\n');
                     }
                     break;
+                // parse flags_1
+                case DT_FLAGS_1:
+                    {
+                        int first = 1;
+                        unsigned long flags = dyn.d_un.d_val;
+
+                        if(color_opt)
+                            printf("%s", C_GREEN);
+
+                        while(flags) {
+                            unsigned long flag;
+
+                            flag = flags & -flags;
+                            flags &= ~flag;
+
+                            if(first)
+                                first = 0;
+                            else
+                                printf(" | ");
+
+                            switch(flag) {
+                                // set RTLD_NOW for this object
+                                case DF_1_NOW:
+                                    printf("DF_1_NOW");
+                                    break;
+                                // set RTLD_GLOBAL for this object
+                                case DF_1_GLOBAL:
+                                    printf("DF_1_GLOBAL");
+                                    break;
+                                // set RTLD_GROUP for this object
+                                case DF_1_GROUP:
+                                    printf("DF_1_GROUP");
+                                    break;
+                                // set RTLD_NODELETE for this object
+                                case DF_1_NODELETE:
+                                    printf("DF_1_NODELETE");
+                                    break;
+                                // trigger filtee loading at runtime
+                                case DF_1_LOADFLTR:
+                                    printf("DF_1_LOADFLTR");
+                                    break;
+                                // set RTLD_INITFIRST for this object
+                                case DF_1_INITFIRST:
+                                    printf("DF_1_INITFIRST");
+                                    break;
+                                // set RTLD_NOOPEN for this object
+                                case DF_1_NOOPEN:
+                                    printf("DF_1_NOOPEN");
+                                    break;
+                                // $ORIGIN must be handled
+                                case DF_1_ORIGIN:
+                                    printf("DF_1_ORIGIN");
+                                    break;
+                                // direct binding enabled
+                                case DF_1_DIRECT:
+                                    printf("DF_1_DIRECT");
+                                    break;
+                                case DF_1_TRANS:
+                                    printf("DF_1_TRANS");
+                                    break;
+                                // object is used to interpose
+                                case DF_1_INTERPOSE:
+                                    printf("DF_1_INTERPOSE");
+                                    break;
+                                // ignore default lib search path
+                                case DF_1_NODEFLIB:
+                                    printf("DF_1_NODEFLIB");
+                                    break;
+                                // object can't be dldump'ed
+                                case DF_1_NODUMP:
+                                    printf("DF_1_NODUMP");
+                                    break;
+                                // configuration alternative created
+                                case DF_1_CONFALT:
+                                    printf("DF_1_CONFALT");
+                                    break;
+                                // filtee terminates filters search
+                                case DF_1_ENDFILTEE:
+                                    printf("DF_1_ENDFILTEE");
+                                    break;
+                                // disp reloc applied at build time
+                                case DF_1_DISPRELDNE:
+                                    printf("DF_1_DISPRELDNE");
+                                    break;
+                                // disp reloc applied at run-time
+                                case DF_1_DISPRELPND:
+                                    printf("DF_1_DISPRELPND");
+                                    break;
+                                // object has no-direct binding
+                                case DF_1_NODIRECT:
+                                    printf("DF_1_NODIRECT");
+                                    break;
+                                case DF_1_IGNMULDEF:
+                                    printf("DF_1_IGNMULDEF");
+                                    break;
+                                case DF_1_NOKSYMS:
+                                    printf("DF_1_NOKSYMS");
+                                    break;
+                                case DF_1_NOHDR:
+                                    printf("DF_1_NOHDR");
+                                    break;
+                                // object is modified after built
+                                case DF_1_EDITED:
+                                    printf("DF_1_EDITED");
+                                    break;
+                                case DF_1_NORELOC:
+                                    printf("DF_1_NORELOC");
+                                    break;
+                                // object has individual interposers
+                                case DF_1_SYMINTPOSE:
+                                    printf("DF_1_SYMINTPOSE");
+                                    break;
+                                // global auditing required
+                                case DF_1_GLOBAUDIT:
+                                    printf("DF_1_GLOBAUDIT");
+                                    break;
+                                // singleton symbols are used
+                                case DF_1_SINGLETON:
+                                    printf("DF_1_SINGLETON");
+                                    break;
+                                case DF_1_STUB:
+                                    printf("DF_1_STUB");
+                                    break;
+                                case DF_1_PIE:
+                                    printf("DF_1_PIE");
+                                    break;
+                                case DF_1_KMOD:
+                                    printf("DF_1_KMOD");
+                                    break;
+                                case DF_1_WEAKFILTER:
+                                    printf("DF_1_WEAKFILTER");
+                                    break;
+                                case DF_1_NOCOMMON:
+                                    printf("DF_1_NOCOMMON");
+                                    break;
+                                default:
+                                    // the flag is unknown
+                                    printf("%#lx", dyn.d_un.d_val);
+                            }
+                        }
+
+                        if(color_opt)
+                            printf("%s", C_END);
+
+                        putchar('\n');
+                    }
+                    break;
                 default:
                     if(color_opt)
                         printf(C_GREEN "%#lx\n" C_END, dyn.d_un.d_val);

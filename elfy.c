@@ -1590,6 +1590,45 @@ void show_dynamic_section(Elf *elf) {
                         putchar('\n');
                     }
                     break;
+                // parse feature_1
+                case DT_FEATURE_1:
+                    {
+                        int first = 1;
+                        unsigned long flags = dyn.d_un.d_val;
+
+                        if(color_opt)
+                            printf("%s", C_GREEN);
+
+                        while(flags) {
+                            unsigned long flag;
+
+                            flag = flags & -flags;
+                            flags &= ~flag;
+
+                            if(first)
+                                first = 0;
+                            else
+                                printf(" | ");
+
+                            switch(flag) {
+                                case DTF_1_PARINIT:
+                                    printf("DTF_1_PARINIT");
+                                    break;
+                                case DTF_1_CONFEXP:
+                                    printf("DTF_1_CONFEXP");
+                                    break;
+                                default:
+                                    // the flag is unknown
+                                    printf("%#lx", dyn.d_un.d_val);
+                            }
+                        }
+
+                        if(color_opt)
+                            printf("%s", C_END);
+
+                        putchar('\n');
+                    }
+                    break;
                 // parse flags_1
                 case DT_FLAGS_1:
                     {

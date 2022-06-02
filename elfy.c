@@ -1668,7 +1668,7 @@ void show_dynamic_section(Elf *elf) {
                                     break;
                                 default:
                                     // the flag is unknown
-                                    printf("%#lx", dyn.d_un.d_val);
+                                    printf("%#lx", flag);
                             }
                         }
 
@@ -1710,7 +1710,7 @@ void show_dynamic_section(Elf *elf) {
                                     break;
                                 default:
                                     // the flag is unknown
-                                    printf("%#lx", dyn.d_un.d_val);
+                                    printf("%#lx", flag);
                             }
                         }
 
@@ -1860,7 +1860,7 @@ void show_dynamic_section(Elf *elf) {
                                     break;
                                 default:
                                     // the flag is unknown
-                                    printf("%#lx", dyn.d_un.d_val);
+                                    printf("%#lx", flag);
                             }
                         }
 

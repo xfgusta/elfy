@@ -1346,7 +1346,7 @@ void show_dynamic_section(Elf *elf) {
                 exit(1);
             }
 
-            print_title("Elf_Dyn %d", i);
+            print_title("Elf_Dyn %zu", i);
 
             // dynamic entry type
             print_field("d_tag", NULL);
@@ -1928,7 +1928,7 @@ void show_dynamic_symtab(Elf *elf) {
                 exit(1);
             }
 
-            print_title("Elf_Sym %d", i);
+            print_title("Elf_Sym %zu", i);
 
             // symbol name
             print_field("st_name", NULL);

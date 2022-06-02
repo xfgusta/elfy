@@ -1189,7 +1189,92 @@ void show_section_headers(Elf *elf) {
         }
 
         // section flags
-        print_field("sh_flags", "%#lx", shdr.sh_flags);
+        print_field("sh_flags", NULL);
+        {
+            int first = 1;
+            unsigned long flags = shdr.sh_flags;
+
+            if(color_opt)
+                printf("%s", C_GREEN);
+
+            if(flags == 0)
+                printf("%#lx", flags);
+
+            while(flags) {
+                unsigned long flag;
+
+                flag = flags & -flags;
+                flags &= ~flag;
+
+                if(first)
+                    first = 0;
+                else
+                    printf(" | ");
+
+                switch(flag) {
+                    // writable
+                    case SHF_WRITE:
+                        printf("SHF_WRITE");
+                        break;
+                    // occupies memory during execution
+                    case SHF_ALLOC:
+                        printf("SHF_ALLOC");
+                        break;
+                    // executable
+                    case SHF_EXECINSTR:
+                        printf("SHF_EXECINSTR");
+                        break;
+                    // might be merged
+                    case SHF_MERGE:
+                        printf("SHF_MERGE");
+                        break;
+                    // contains nul-terminated strings
+                    case SHF_STRINGS:
+                        printf("SHF_STRINGS");
+                        break;
+                    // `sh_info' contains SHT index
+                    case SHF_INFO_LINK:
+                        printf("SHF_INFO_LINK");
+                        break;
+                    // preserve order after combining
+                    case SHF_LINK_ORDER:
+                        printf("SHF_LINK_ORDER");
+                        break;
+                    // non-standard OS specific handling required
+                    case SHF_OS_NONCONFORMING:
+                        printf("SHF_OS_NONCONFORMING");
+                        break;
+                    // section is member of a group
+                    case SHF_GROUP:
+                        printf("SHF_GROUP");
+                        break;
+                    // section hold thread-local data
+                    case SHF_TLS:
+                        printf("SHF_TLS");
+                        break;
+                    // section is excluded unless referenced or allocated
+                    case SHF_EXCLUDE:
+                        printf("SHF_EXCLUDE");
+                        break;
+                    // section with compressed data
+                    case SHF_COMPRESSED:
+                        printf("SHF_COMPRESSED");
+                        break;
+                    // not to be GCed by linker
+                    case SHF_GNU_RETAIN:
+                        printf("SHF_GNU_RETAIN");
+                        break;
+                    default:
+                        // the flag is unknown
+                        printf("%#lx", flag);
+                }
+            }
+
+            if(color_opt)
+                printf("%s", C_END);
+
+            putchar('\n');
+        }
 
         // section virtual addr at execution
         print_field("sh_addr", "%#lx", shdr.sh_addr);

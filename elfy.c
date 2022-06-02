@@ -1631,6 +1631,9 @@ void show_dynamic_section(Elf *elf) {
                         if(color_opt)
                             printf("%s", C_GREEN);
 
+                        if(flags == 0)
+                            printf("%#lx", flags);
+
                         while(flags) {
                             unsigned long flag;
 
@@ -1684,6 +1687,9 @@ void show_dynamic_section(Elf *elf) {
                         if(color_opt)
                             printf("%s", C_GREEN);
 
+                        if(flags == 0)
+                            printf("%#lx", flags);
+
                         while(flags) {
                             unsigned long flag;
 
@@ -1722,6 +1728,9 @@ void show_dynamic_section(Elf *elf) {
 
                         if(color_opt)
                             printf("%s", C_GREEN);
+
+                        if(flags == 0)
+                            printf("%#lx", flags);
 
                         while(flags) {
                             unsigned long flag;

@@ -2183,6 +2183,9 @@ void show_dynamic_symtab(Elf *elf) {
             // symbol value
             print_field("st_value", "%#lx", sym.st_value);
 
+            // symbol size
+            print_field("st_size", "%ld", sym.st_size);
+
             // symbol type and binding
             print_field("st_info", NULL);
             if(color_opt)

@@ -1252,6 +1252,10 @@ void show_section_headers(Elf *elf) {
                     case SHF_TLS:
                         printf("SHF_TLS");
                         break;
+                    // special ordering requirement
+                    case SHF_ORDERED:
+                        printf("SHF_ORDERED");
+                        break;
                     // section is excluded unless referenced or allocated
                     case SHF_EXCLUDE:
                         printf("SHF_EXCLUDE");

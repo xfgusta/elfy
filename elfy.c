@@ -19,13 +19,15 @@
 #define C_END    "\033[0m"
 
 int file_header_opt, program_headers_opt, section_headers_opt,
-    dynamic_section_opt, dynamic_symtab_opt, color_opt, help_opt, version_opt;
+    dynamic_section_opt, symtab_opt, dynamic_symtab_opt, color_opt, help_opt,
+    version_opt;
 
 struct option long_opts[] = {
     {"file-header",     no_argument, &file_header_opt,     1},
     {"program-headers", no_argument, &program_headers_opt, 1},
     {"section-headers", no_argument, &section_headers_opt, 1},
     {"dynamic",         no_argument, &dynamic_section_opt, 1},
+    {"symtab",          no_argument, &symtab_opt,          1},
     {"dyn-syms",        no_argument, &dynamic_symtab_opt,  1},
     {"color",           no_argument, &color_opt,           1},
     {"help",            no_argument, &help_opt,            1},
@@ -1891,6 +1893,236 @@ void show_dynamic_section(Elf *elf) {
     }
 }
 
+// display the symbol table (option --symtab)
+void show_symtab(Elf *elf) {
+    Elf_Scn *section = NULL;
+    size_t shstrndx;
+
+    // strlen("st_shndx")
+    field_max_len = 8;
+
+    // get the section index of the strtab
+    if(elf_getshdrstrndx(elf, &shstrndx) != 0) {
+        fprintf(stderr, "elf_getshdrstrndx() failed: %s", elf_errmsg(-1));
+        exit(1);
+    }
+
+    while((section = elf_nextscn(elf, section))) {
+        GElf_Shdr shdr;
+        Elf_Data *data = NULL;
+        size_t num = 0;
+
+        // get the section header
+        if(!gelf_getshdr(section, &shdr)) {
+            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            exit(1);
+        }
+        // if it's not the symbol table section, skip the section
+        if(shdr.sh_type != SHT_SYMTAB)
+            continue;
+
+        // get data from section
+        data = elf_getdata(section, data);
+        if(!data) {
+            fprintf(stderr, "elf_getdata() failed: %s", elf_errmsg(-1));
+            exit(1);
+        }
+
+        num = shdr.sh_size / gelf_fsize(elf, ELF_T_SYM, 1, data->d_version);
+
+        for(size_t i = 0; i < num; i++) {
+            GElf_Sym sym;
+            char *name = NULL;
+
+            // get information from the dynamic symbol table
+            if(!gelf_getsym(data, i, &sym)) {
+                fprintf(stderr, "gelf_getsym() failed: %s", elf_errmsg(-1));
+                exit(1);
+            }
+
+            print_title("Elf_Sym %zu", i);
+
+            // symbol name
+            print_field("st_name", NULL);
+
+            if(color_opt)
+                printf(C_GREEN "%d" C_END, sym.st_name);
+            else
+                printf("%d", sym.st_name);
+
+            name = elf_strptr(elf, shdr.sh_link, sym.st_name);
+            if(!name || *name == '\0')
+                putchar('\n');
+            else
+                printf(" (%s)\n", name);
+
+            // symbol value
+            print_field("st_value", "%#lx", sym.st_value);
+
+            // symbol size
+            print_field("st_size", "%ld", sym.st_size);
+
+            // symbol type and binding
+            print_field("st_info", NULL);
+            if(color_opt)
+                printf(C_GREEN "%#x" C_END, sym.st_info);
+            else
+                printf("%#x", sym.st_info);
+
+            printf(" (");
+
+            // parse symbol type
+            switch(GELF_ST_TYPE(sym.st_info)) {
+                case STT_NOTYPE:
+                    printf("STT_NOTYPE");
+                    break;
+                case STT_OBJECT:
+                    printf("STT_OBJECT");
+                    break;
+                case STT_FUNC:
+                    printf("STT_FUNC");
+                    break;
+                case STT_SECTION:
+                    printf("STT_SECTION");
+                    break;
+                case STT_FILE:
+                    printf("STT_FILE");
+                    break;
+                case STT_COMMON:
+                    printf("STT_COMMON");
+                    break;
+                case STT_TLS:
+                    printf("STT_TLS");
+                    break;
+                default:
+                    printf("%#x", GELF_ST_TYPE(sym.st_info));
+
+                    if((sym.st_info >= STT_LOPROC) && (sym.st_info <= STT_HIPROC))
+                        printf(" processor-specific");
+                    else if((sym.st_info >= STT_LOOS) && (sym.st_info <= STT_HIOS))
+                        printf(" OS-specific");
+                    else
+                        printf(" unknown");
+            }
+
+            printf(", ");
+
+            // parse symbol binding
+            switch(GELF_ST_BIND(sym.st_info)) {
+                case STB_LOCAL:
+                    printf("STB_LOCAL");
+                    break;
+                case STB_GLOBAL:
+                    printf("STB_GLOBAL");
+                    break;
+                case STB_WEAK:
+                    printf("STB_WEAK");
+                    break;
+                default:
+                    printf("%#x", GELF_ST_BIND(sym.st_info));
+
+                    if((sym.st_info >= STB_LOPROC) && (sym.st_info <= STB_HIPROC))
+                        printf(" processor-specific");
+                    else if((sym.st_info >= STB_LOOS) && (sym.st_info <= STB_HIOS))
+                        printf(" OS-specific");
+                    else
+                        printf(" unknown");
+            }
+
+            puts(")");
+
+            // symbol visibility
+            print_field("st_other", NULL);
+            switch(GELF_ST_VISIBILITY(sym.st_other)) {
+                case STV_DEFAULT:
+                    print_field_info("STV_DEFAULT", "default symbol visibility rules");
+                    break;
+                case STV_INTERNAL:
+                    print_field_info("STV_INTERNAL", "processor specific hidden class");
+                    break;
+                case STV_HIDDEN:
+                    print_field_info("STV_HIDDEN", "sym unavailable in other modules");
+                    break;
+                case STV_PROTECTED:
+                    print_field_info("STV_PROTECTED", "not preemptible, not exported");
+                    break;
+                default:
+                    if(color_opt)
+                        printf(C_GREEN "%#x" C_END, GELF_ST_VISIBILITY(sym.st_other));
+                    else
+                        printf("%#x", GELF_ST_VISIBILITY(sym.st_other));
+
+                    puts(" (unknown)");
+            }
+
+            // section index
+            print_field("st_shndx", NULL);
+            // parse special section indices
+            switch(sym.st_shndx) {
+                case SHN_UNDEF:
+                    print_field_info("SHN_UNDEF", "undefined section");
+                    break;
+                case SHN_BEFORE:
+                    print_field_info("SHN_BEFORE", "order section before all others (Solaris)");
+                    break;
+                case SHN_AFTER:
+                    print_field_info("SHN_AFTER", "order section after all others (Solaris)");
+                    break;
+                case SHN_ABS:
+                    print_field_info("SHN_ABS", "associated symbol is absolute");
+                    break;
+                case SHN_COMMON:
+                    print_field_info("SHN_COMMON", "associated symbol is common");
+                    break;
+                case SHN_XINDEX:
+                    print_field_info("SHN_XINDEX", "index is in extra table");
+                    break;
+                default:
+                    if(color_opt)
+                        printf(C_GREEN "%d" C_END, sym.st_shndx);
+                    else
+                        printf("%d", sym.st_shndx);
+
+                    if((sym.st_shndx >= SHN_LOPROC) && (sym.st_shndx <= SHN_HIPROC))
+                        puts(" (processor-specific)");
+                    else if((sym.st_shndx >= SHN_LOOS) && (sym.st_shndx <= SHN_HIOS))
+                        puts(" (OS-specific)");
+                    else if(sym.st_shndx >= SHN_LORESERVE)
+                        puts(" (reserved indices)");
+                    else {
+                        Elf_Scn *section;
+                        GElf_Shdr shdr;
+                        char *name = NULL;
+
+                        // get the section
+                        section = elf_getscn(elf, sym.st_shndx);
+                        if(!section) {
+                            fprintf(stderr, "elf_getscn() failed: %s",
+                                    elf_errmsg(-1));
+                            exit(1);
+                        }
+
+                        // get the section header
+                        if(!gelf_getshdr(section, &shdr)) {
+                            fprintf(stderr, "gelf_getshdr() failed: %s",
+                                    elf_errmsg(-1));
+                            exit(1);
+                        }
+
+                        name = elf_strptr(elf, shstrndx, shdr.sh_name);
+                        if(!name || *name == '\0')
+                            putchar('\n');
+                        else
+                            printf(" (%s)\n", name);
+                    }
+            }
+
+            if(i + 1 != num)
+                putchar('\n');
+        }
+    }
+}
+
 // display the dynamic symbol table (option --dyn-syms)
 void show_dynamic_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
@@ -2097,6 +2329,7 @@ void usage(FILE *stream) {
            "  -p, --program-headers    display the program headers\n"
            "  -s, --section-headers    display the section headers\n"
            "  -d, --dynamic            display the dynamic section\n"
+           "  --symtab                 display the symbol table\n"
            "  --dyn-syms               display the dynamic symbol table\n"
            "  -c, --color              colored output\n"
            "  --help                   display this information\n"
@@ -2138,8 +2371,8 @@ int main(int argc, char **argv) {
 
     // none of the options were used
     if(!(file_header_opt || program_headers_opt || section_headers_opt ||
-         dynamic_section_opt || dynamic_symtab_opt || color_opt || help_opt ||
-         version_opt)) {
+         dynamic_section_opt || symtab_opt || dynamic_symtab_opt || color_opt ||
+         help_opt || version_opt)) {
         usage(stderr);
         exit(1);
     }
@@ -2195,6 +2428,8 @@ int main(int argc, char **argv) {
         show_dynamic_section(elf);
     else if(dynamic_symtab_opt)
         show_dynamic_symtab(elf);
+    else if(symtab_opt)
+        show_symtab(elf);
 
     elf_end(elf);
     close(fd);

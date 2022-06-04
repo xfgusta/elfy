@@ -1956,12 +1956,6 @@ void show_symtab(Elf *elf) {
             else
                 printf(" (%s)\n", name);
 
-            // symbol value
-            print_field("st_value", "%#lx", sym.st_value);
-
-            // symbol size
-            print_field("st_size", "%ld", sym.st_size);
-
             // symbol type and binding
             print_field("st_info", NULL);
             if(color_opt)
@@ -2117,6 +2111,12 @@ void show_symtab(Elf *elf) {
                     }
             }
 
+            // symbol value
+            print_field("st_value", "%#lx", sym.st_value);
+
+            // symbol size
+            print_field("st_size", "%ld", sym.st_size);
+
             if(i + 1 != num)
                 putchar('\n');
         }
@@ -2179,12 +2179,6 @@ void show_dynamic_symtab(Elf *elf) {
                 putchar('\n');
             else
                 printf(" (%s)\n", name);
-
-            // symbol value
-            print_field("st_value", "%#lx", sym.st_value);
-
-            // symbol size
-            print_field("st_size", "%ld", sym.st_size);
 
             // symbol type and binding
             print_field("st_info", NULL);
@@ -2316,6 +2310,12 @@ void show_dynamic_symtab(Elf *elf) {
                     else
                         puts(" (unknown)");
             }
+
+            // symbol value
+            print_field("st_value", "%#lx", sym.st_value);
+
+            // symbol size
+            print_field("st_size", "%ld", sym.st_size);
 
             if(i + 1 != num)
                 putchar('\n');

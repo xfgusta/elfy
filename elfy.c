@@ -2041,7 +2041,42 @@ void show_dynamic_symtab(Elf *elf) {
             }
 
             // section index
-            print_field("st_shndx", "%d", sym.st_shndx);
+            print_field("st_shndx", NULL);
+            // parse special section indices
+            switch(sym.st_shndx) {
+                case SHN_UNDEF:
+                    print_field_info("SHN_UNDEF", "undefined section");
+                    break;
+                case SHN_BEFORE:
+                    print_field_info("SHN_BEFORE", "order section before all others (Solaris)");
+                    break;
+                case SHN_AFTER:
+                    print_field_info("SHN_AFTER", "order section after all others (Solaris)");
+                    break;
+                case SHN_ABS:
+                    print_field_info("SHN_ABS", "associated symbol is absolute");
+                    break;
+                case SHN_COMMON:
+                    print_field_info("SHN_COMMON", "associated symbol is common");
+                    break;
+                case SHN_XINDEX:
+                    print_field_info("SHN_XINDEX", "index is in extra table");
+                    break;
+                default:
+                    if(color_opt)
+                        printf(C_GREEN "%d" C_END, sym.st_shndx);
+                    else
+                        printf("%d", sym.st_shndx);
+
+                    if((sym.st_shndx >= SHN_LOPROC) && (sym.st_shndx <= SHN_HIPROC))
+                        puts(" (processor-specific)");
+                    else if((sym.st_shndx >= SHN_LOOS) && (sym.st_shndx <= SHN_HIOS))
+                        puts(" (OS-specific)");
+                    else if(sym.st_shndx >= SHN_LORESERVE)
+                        puts(" (reserved indices)");
+                    else
+                        puts(" (unknown)");
+            }
 
             if(i + 1 != num)
                 putchar('\n');

@@ -1,0 +1,50 @@
+.TH elfy 1 "2022-06-04" "Elfy"
+.SH NAME
+elfy - display information about ELF files
+.SH SYNOPSIS
+\fBelfy\fR [options] [\fIfile\fR]
+.SH DESCRIPTION
+\fBelfy\fR is a tool for displaying information about an ELF \fIfile\fR.
+.PP
+It currently support parsing the:
+.RS
+.IP \[bu] 2
+file header
+.IP \[bu]
+program headers
+.IP \[bu]
+section headers
+.IP \[bu]
+dynamic section
+.IP \[bu]
+symbol table
+.IP \[bu]
+dynamic symbol table
+.RE
+.SH OPTIONS
+.IP "-h, --file-header"
+Display the ELF file header and exit
+.IP "-p, --program-headers"
+Display the program headers and exit
+.IP "-s, --section-headers"
+Display the section headers and exit
+.IP "-d, --dynamic"
+Display the dynamic section and exit
+.IP "--symtab"
+Display the symbol table and exit
+.IP "--dyn-syms"
+Display the dynamic symbol table and exit
+.IP "-c, --color"
+Colored output
+.IP "--help"
+Display the usage and exit
+.IP "--version"
+Display the version number of elfy and exit
+.SH AUTHOR
+Gustavo Costa <xfgusta@gmail.com>
+.SH BUGS
+Report bugs to <https://github.com/xfgusta/elfy/issues>
+.SH COPYRIGHT
+MIT License
+
+Copyright (c) 2022 Gustavo Costa

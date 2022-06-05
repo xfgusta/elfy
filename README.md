@@ -15,6 +15,16 @@ Run `elfy --help` to print a description of the command-line options. I plan to 
 
 ## Installation
 
+### Arch Linux
+
+Arch Linux users may use the AUR [elfy](https://aur.archlinux.org/packages/elfy)
+
+```text
+git clone https://aur.archlinux.org/elfy.git
+cd elfy
+makepkg -si
+```
+
 ### Fedora Linux
 
 Fedora Linux users may use the Copr [xfgusta/elfy](https://copr.fedorainfracloud.org/coprs/xfgusta/elfy/)

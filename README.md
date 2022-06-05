@@ -13,6 +13,17 @@ It currently support parsing the:
 
 Run `elfy --help` to print a description of the command-line options. I plan to add more options soon.
 
+## Installation
+
+### Fedora Linux
+
+Fedora Linux users may use the Copr [xfgusta/elfy](https://copr.fedorainfracloud.org/coprs/xfgusta/elfy/)
+
+```text
+dnf copr enable xfgusta/elfy
+dnf install elfy
+```
+
 ## Building from source
 
 **Requirements**
@@ -21,7 +32,7 @@ Run `elfy --help` to print a description of the command-line options. I plan to 
 + gcc
 + libelf
 
-```ansi
+```text
 git clone https://github.com/xfgusta/elfy
 cd elfy
 make

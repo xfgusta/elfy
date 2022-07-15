@@ -23,17 +23,19 @@ dynamic symbol table
 .RE
 .SH OPTIONS
 .IP "-h, --file-header"
-Display the ELF file header and exit
+Display the ELF file header
 .IP "-p, --program-headers"
-Display the program headers and exit
+Display the program headers
 .IP "-s, --section-headers"
-Display the section headers and exit
+Display the section headers
 .IP "-d, --dynamic"
-Display the dynamic section and exit
+Display the dynamic section
 .IP "--symtab"
-Display the symbol table and exit
+Display the symbol table
 .IP "--dyn-syms"
-Display the dynamic symbol table and exit
+Display the dynamic symbol table
+.IP "-a, --all"
+Equivalent to -h -p -s -d --symtab --dyn-syms
 .IP "-c, --color"
 Colored output
 .IP "--help"

@@ -24,3 +24,5 @@ uninstall:
 
 clean:
 	rm -f elfy
+
+.PHONY: install uninstall clean

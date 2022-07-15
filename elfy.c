@@ -19,21 +19,29 @@
 #define C_YELLOW "\033[33m"
 #define C_END    "\033[0m"
 
-int file_header_opt, program_headers_opt, section_headers_opt,
-    dynamic_section_opt, symtab_opt, dynamic_symtab_opt, color_opt, help_opt,
-    version_opt;
+int file_header_opt,
+    program_headers_opt,
+    section_headers_opt,
+    dynamic_section_opt,
+    symtab_opt,
+    dynamic_symtab_opt,
+    color_opt,
+    help_opt,
+    version_opt,
+    all_opt;
 
-struct option long_opts[] = {
+const struct option long_opts[] = {
     {"file-header",     no_argument, &file_header_opt,     1},
     {"program-headers", no_argument, &program_headers_opt, 1},
     {"section-headers", no_argument, &section_headers_opt, 1},
     {"dynamic",         no_argument, &dynamic_section_opt, 1},
     {"symtab",          no_argument, &symtab_opt,          1},
     {"dyn-syms",        no_argument, &dynamic_symtab_opt,  1},
+    {"all",             no_argument, &all_opt,             1},
     {"color",           no_argument, &color_opt,           1},
     {"help",            no_argument, &help_opt,            1},
     {"version",         no_argument, &version_opt,         1},
-    {0, 0, 0, 0}
+    {0,                 0,           0,                    0}
 };
 
 // length of the longest field name (used by print_field)
@@ -57,11 +65,10 @@ void print_title(char *title, ...) {
     va_end(args);
 }
 
-/* print field name and its value
-   add spaces between name and value based on field_max_len
-   don't print value if value is NULL
-*/
-void print_field(char *field, char *value, ...) {
+// print field name and its value
+// add spaces between name and value based on field_max_len
+// don't print value if value is NULL
+void print_field(const char *field, char *value, ...) {
     int len = strlen(field);
 
     if(color_opt)
@@ -87,9 +94,8 @@ void print_field(char *field, char *value, ...) {
     }
 }
 
-/* print field value and its info inside parentheses
-   e.g.: ET_DYN (shared object file)
-*/
+// print field value and its info inside parentheses
+// e.g.: ET_DYN (shared object file)
 void print_field_info(char *value, char *info) {
     if(color_opt)
         printf(C_GREEN "%s" C_END " (%s)\n", value, info);
@@ -100,6 +106,8 @@ void print_field_info(char *value, char *info) {
 // display the elf file header (option -h)
 void show_file_header(Elf *elf) {
     GElf_Ehdr ehdr;
+
+    print_title("File Header\n");
 
     // strlen("EI_ABIVERSION")
     field_max_len = 13;
@@ -132,7 +140,7 @@ void show_file_header(Elf *elf) {
     print_field("e_type", NULL);
     switch(ehdr.e_type) {
         case ET_NONE:
-            print_field_info("ET_NONE", "no file type");
+            print_field_info("ET_NONE", "unknown type");
             break;
         case ET_REL:
             print_field_info("ET_REL", "relocatable file");
@@ -792,10 +800,10 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFCLASSNONE", "invalid class");
             break;
         case ELFCLASS32:
-            print_field_info("ELFCLASS32", "32-bit objects");
+            print_field_info("ELFCLASS32", "32-bit object");
             break;
         case ELFCLASS64:
-            print_field_info("ELFCLASS64", "64-bit objects");
+            print_field_info("ELFCLASS64", "64-bit object");
             break;
         default:
             if(color_opt)
@@ -909,6 +917,8 @@ void show_file_header(Elf *elf) {
 // display the program headers (option -p)
 void show_program_headers(Elf *elf) {
     size_t num;
+
+    print_title("Program Headers\n");
 
     // strlen("p_filesz")
     field_max_len = 8;
@@ -1045,6 +1055,8 @@ void show_program_headers(Elf *elf) {
 void show_section_headers(Elf *elf) {
     size_t num;
     size_t shstrndx;
+
+    print_title("Section Headers\n");
 
     // strlen("sh_addralign")
     field_max_len = 12;
@@ -1313,6 +1325,8 @@ void show_section_headers(Elf *elf) {
 void show_dynamic_section(Elf *elf) {
     Elf_Scn *section = NULL;
     size_t sh_entsize;
+
+    print_title("Dynamic Section\n");
 
     // strlen("d_val")
     field_max_len = 5;
@@ -1899,6 +1913,8 @@ void show_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
     size_t shstrndx;
 
+    print_title("Symbol Table\n");
+
     // strlen("st_shndx")
     field_max_len = 8;
 
@@ -2128,6 +2144,8 @@ void show_symtab(Elf *elf) {
 void show_dynamic_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
 
+    print_title("Dynamic Symbol Table\n");
+
     // strlen("st_shndx")
     field_max_len = 8;
 
@@ -2327,18 +2345,19 @@ void show_dynamic_symtab(Elf *elf) {
 // display the help message
 void usage(FILE *stream) {
     fprintf(stream,
-           "Usage: elfy [option] FILE\n\n"
-           "Options:\n"
-           "  -h, --file-header        display the ELF file header\n"
-           "  -p, --program-headers    display the program headers\n"
-           "  -s, --section-headers    display the section headers\n"
-           "  -d, --dynamic            display the dynamic section\n"
-           "  --symtab                 display the symbol table\n"
-           "  --dyn-syms               display the dynamic symbol table\n"
-           "  -c, --color              colored output\n"
-           "  --help                   display this information\n"
-           "  --version                display the version number of elfy\n\n"
-           "Report bugs to <https://github.com/xfgusta/elfy/issues>\n");
+            "Usage: elfy [options] FILE\n\n"
+            "Options:\n"
+            "  -h, --file-header      display the ELF file header\n"
+            "  -p, --program-headers  display the program headers\n"
+            "  -s, --section-headers  display the section headers\n"
+            "  -d, --dynamic          display the dynamic section\n"
+            "  --symtab               display the symbol table\n"
+            "  --dyn-syms             display the dynamic symbol table\n"
+            "  -a, --all              equivalent to -h -p -s -d --symtab --dyn-syms\n"
+            "  -c, --color            colored output\n"
+            "  --help                 display this information\n"
+            "  --version              display the version number of elfy\n\n"
+            "Report bugs to <https://github.com/xfgusta/elfy/issues>\n");
 }
 
 int main(int argc, char **argv) {
@@ -2347,8 +2366,9 @@ int main(int argc, char **argv) {
     char *filename;
     Elf *elf;
     int fd;
+    int is_first = 1;
 
-    while((opt = getopt_long(argc, argv, "hpsdc", long_opts,
+    while((opt = getopt_long(argc, argv, "hpsdac", long_opts,
                              &opt_index)) != -1) {
         switch(opt) {
             case 'h':
@@ -2363,6 +2383,9 @@ int main(int argc, char **argv) {
             case 'd':
                 dynamic_section_opt = 1;
                 break;
+            case 'a':
+                all_opt = 1;
+                break;
             case 'c':
                 color_opt = 1;
                 break;
@@ -2375,8 +2398,8 @@ int main(int argc, char **argv) {
 
     // none of the options were used
     if(!(file_header_opt || program_headers_opt || section_headers_opt ||
-         dynamic_section_opt || symtab_opt || dynamic_symtab_opt || color_opt ||
-         help_opt || version_opt)) {
+         dynamic_section_opt || symtab_opt || dynamic_symtab_opt ||
+         all_opt || color_opt || help_opt || version_opt)) {
         usage(stderr);
         exit(1);
     }
@@ -2422,18 +2445,71 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    if(file_header_opt)
+    if (all_opt) {
         show_file_header(elf);
-    else if(program_headers_opt)
+        putchar('\n');
+
         show_program_headers(elf);
-    else if(section_headers_opt)
+        putchar('\n');
+
         show_section_headers(elf);
-    else if(dynamic_section_opt)
+        putchar('\n');
+
         show_dynamic_section(elf);
-    else if(dynamic_symtab_opt)
-        show_dynamic_symtab(elf);
-    else if(symtab_opt)
+        putchar('\n');
+
         show_symtab(elf);
+        putchar('\n');
+
+        show_dynamic_symtab(elf);
+    } else {
+        if(file_header_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_file_header(elf);
+            is_first = 0;
+        }
+
+        if(program_headers_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_program_headers(elf);
+            is_first = 0;
+        }
+
+        if(section_headers_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_section_headers(elf);
+            is_first = 0;
+        }
+
+        if(dynamic_section_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_dynamic_section(elf);
+            is_first = 0;
+        }
+
+        if(symtab_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_symtab(elf);
+            is_first = 0;
+        }
+
+        if(dynamic_symtab_opt) {
+            if(!is_first)
+                putchar('\n');
+
+            show_dynamic_symtab(elf);
+        }
+    }
 
     elf_end(elf);
     close(fd);

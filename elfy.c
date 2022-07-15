@@ -107,6 +107,8 @@ void print_field_info(char *value, char *info) {
 void show_file_header(Elf *elf) {
     GElf_Ehdr ehdr;
 
+    print_title("File Header\n");
+
     // strlen("EI_ABIVERSION")
     field_max_len = 13;
 
@@ -916,6 +918,8 @@ void show_file_header(Elf *elf) {
 void show_program_headers(Elf *elf) {
     size_t num;
 
+    print_title("Program Headers\n");
+
     // strlen("p_filesz")
     field_max_len = 8;
 
@@ -1051,6 +1055,8 @@ void show_program_headers(Elf *elf) {
 void show_section_headers(Elf *elf) {
     size_t num;
     size_t shstrndx;
+
+    print_title("Section Headers\n");
 
     // strlen("sh_addralign")
     field_max_len = 12;
@@ -1319,6 +1325,8 @@ void show_section_headers(Elf *elf) {
 void show_dynamic_section(Elf *elf) {
     Elf_Scn *section = NULL;
     size_t sh_entsize;
+
+    print_title("Dynamic Section\n");
 
     // strlen("d_val")
     field_max_len = 5;
@@ -1905,6 +1913,8 @@ void show_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
     size_t shstrndx;
 
+    print_title("Symbol Table\n");
+
     // strlen("st_shndx")
     field_max_len = 8;
 
@@ -2134,6 +2144,8 @@ void show_symtab(Elf *elf) {
 void show_dynamic_symtab(Elf *elf) {
     Elf_Scn *section = NULL;
 
+    print_title("Dynamic Symbol Table\n");
+
     // strlen("st_shndx")
     field_max_len = 8;
 
@@ -2354,6 +2366,7 @@ int main(int argc, char **argv) {
     char *filename;
     Elf *elf;
     int fd;
+    int is_first = 1;
 
     while((opt = getopt_long(argc, argv, "hpsdac", long_opts,
                              &opt_index)) != -1) {
@@ -2434,24 +2447,68 @@ int main(int argc, char **argv) {
 
     if (all_opt) {
         show_file_header(elf);
+        putchar('\n');
+
         show_program_headers(elf);
+        putchar('\n');
+
         show_section_headers(elf);
+        putchar('\n');
+
         show_dynamic_section(elf);
+        putchar('\n');
+
         show_symtab(elf);
+        putchar('\n');
+
         show_dynamic_symtab(elf);
     } else {
-        if(file_header_opt)
+        if(file_header_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_file_header(elf);
-        if(program_headers_opt)
+            is_first = 0;
+        }
+
+        if(program_headers_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_program_headers(elf);
-        if(section_headers_opt)
+            is_first = 0;
+        }
+
+        if(section_headers_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_section_headers(elf);
-        if(dynamic_section_opt)
+            is_first = 0;
+        }
+
+        if(dynamic_section_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_dynamic_section(elf);
-        if(symtab_opt)
+            is_first = 0;
+        }
+
+        if(symtab_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_symtab(elf);
-        if(dynamic_symtab_opt)
+            is_first = 0;
+        }
+
+        if(dynamic_symtab_opt) {
+            if(!is_first)
+                putchar('\n');
+
             show_dynamic_symtab(elf);
+        }
     }
 
     elf_end(elf);

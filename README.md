@@ -11,13 +11,11 @@ It currently support parsing the:
 + symbol table
 + dynamic symbol table
 
-Run `elfy --help` to print a description of the command-line options. I plan to add more options soon.
-
 ## Installation
 
 ### Arch Linux
 
-Arch Linux users may use the AUR [elfy](https://aur.archlinux.org/packages/elfy)
+[**elfy**](https://aur.archlinux.org/packages/elfy) package from AUR
 
 ```text
 git clone https://aur.archlinux.org/elfy.git
@@ -27,14 +25,14 @@ makepkg -si
 
 ### Fedora Linux
 
-Fedora Linux users may use the Copr [xfgusta/elfy](https://copr.fedorainfracloud.org/coprs/xfgusta/elfy/)
+[**elfy**](https://copr.fedorainfracloud.org/coprs/xfgusta/elfy/) package from Copr
 
 ```text
 dnf copr enable xfgusta/elfy
 dnf install elfy
 ```
 
-## Building from source
+### From source
 
 **Requirements**
 
@@ -42,12 +40,22 @@ dnf install elfy
 + gcc
 + libelf
 
+The install directory defaults to `/usr/local`:
+
 ```text
-git clone https://github.com/xfgusta/elfy
-cd elfy
-make
+make install
+```
+
+You can install **elfy** in a different directory using the `PREFIX` variable:
+
+```text
+make PREFIX=/usr install
 ```
 
 ## Screenshot
 
 ![screenshot](screenshot.png)
+
+## License
+
+Copyright (c) 2022 Gustavo Costa. Distributed under the MIT license.

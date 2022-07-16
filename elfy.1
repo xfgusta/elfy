@@ -1,52 +1,74 @@
-.TH elfy 1 "2022-06-04" "Elfy"
+.TH elfy 1 "2022-06-04" "elfy"
+
 .SH NAME
-elfy - display information about ELF files
+elfy \- display information about ELF files
+
 .SH SYNOPSIS
-\fBelfy\fR [options] [\fIfile\fR]
+\fBelfy\fR [\fB--help\fR] [\fB--version\fR] [\fB-h\fR] [\fB-p\fR] [\fB-s\fR] [\fB-d\fR] [\fB--symtab\fR] [\fB--dyn-syms\fR] [\fB-a\fR] [\fIFILE\fR]
+
 .SH DESCRIPTION
-\fBelfy\fR is a tool for displaying information about an ELF \fIfile\fR.
+\fBelfy\fR is a tool for displaying information about an ELF \fIFILE\fR.
+
 .PP
 It currently support parsing the:
+
 .RS
 .IP \[bu] 2
 file header
+
 .IP \[bu]
 program headers
+
 .IP \[bu]
 section headers
+
 .IP \[bu]
 dynamic section
+
 .IP \[bu]
 symbol table
+
 .IP \[bu]
 dynamic symbol table
 .RE
+
 .SH OPTIONS
-.IP "-h, --file-header"
-Display the ELF file header
-.IP "-p, --program-headers"
-Display the program headers
-.IP "-s, --section-headers"
-Display the section headers
-.IP "-d, --dynamic"
-Display the dynamic section
-.IP "--symtab"
-Display the symbol table
-.IP "--dyn-syms"
-Display the dynamic symbol table
-.IP "-a, --all"
-Equivalent to -h -p -s -d --symtab --dyn-syms
-.IP "-c, --color"
-Colored output
-.IP "--help"
+
+.IP "\fB--help\fR"
 Display the usage and exit
-.IP "--version"
+
+.IP "\fB--version\fR"
 Display the version number of elfy and exit
+
+.IP "\fB-h\fR, \fB--file-header\fR"
+Display the ELF file header
+
+.IP "\fB-p\fR, \fB--program-headers\fR"
+Display the program headers
+
+.IP "\fB-s\fR, \fB--section-headers\fR"
+Display the section headers
+
+.IP "\fB-d\fR, \fB--dynamic\fR"
+Display the dynamic section
+
+.IP "\fB--symtab\fR"
+Display the symbol table
+
+.IP "\fB--dyn-syms\fR"
+Display the dynamic symbol table
+
+.IP "\fB-a\fR, \fB--all\fR"
+Equivalent to \fB-h\fR \fB-p\fR \fB-s\fR \fB-d\fR \fB--symtab\fR \fB--dyn-syms\fR
+
+.IP "\fB-c\fR, \fB--color\fR"
+Colored output
+
 .SH AUTHOR
 Gustavo Costa <xfgusta@gmail.com>
+
 .SH BUGS
 Report bugs to <https://github.com/xfgusta/elfy/issues>
-.SH COPYRIGHT
-MIT License
 
+.SH COPYRIGHT
 Copyright (c) 2022 Gustavo Costa

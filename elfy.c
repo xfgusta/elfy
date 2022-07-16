@@ -19,6 +19,8 @@
 #define C_YELLOW "\033[33m"
 #define C_END    "\033[0m"
 
+#define print_error(...) fprintf(stderr, "elfy: " __VA_ARGS__);
+
 int file_header_opt,
     program_headers_opt,
     section_headers_opt,
@@ -114,7 +116,7 @@ void show_file_header(Elf *elf) {
 
     // get the elf file header
     if(!gelf_getehdr(elf, &ehdr)) {
-        fprintf(stderr, "gelf_getehdr() failed: %s", elf_errmsg(-1));
+        print_error("gelf_getehdr() failed: %s", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
@@ -757,12 +759,12 @@ void show_file_header(Elf *elf) {
 
         section = elf_getscn(elf, 0);
         if(!section) {
-            fprintf(stderr, "elf_getscn() failed: %s", elf_errmsg(-1));
+            print_error("elf_getscn() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
         if(!gelf_getshdr(section, &shdr)) {
-            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getshdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -925,7 +927,7 @@ void show_program_headers(Elf *elf) {
 
     // get the number of program headers
     if(elf_getphdrnum(elf, &num) != 0) {
-        fprintf(stderr, "elf_getphdrnum() failed: %s", elf_errmsg(-1));
+        print_error("elf_getphdrnum() failed: %s", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
@@ -934,7 +936,7 @@ void show_program_headers(Elf *elf) {
 
         // get the program header
         if(!gelf_getphdr(elf, i, &phdr)) {
-            fprintf(stderr, "gelf_getphdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getphdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -1063,13 +1065,13 @@ void show_section_headers(Elf *elf) {
 
     // get the number of section headers
     if(elf_getshdrnum(elf, &num) != 0) {
-        fprintf(stderr, "elf_getshdrnum() failed: %s", elf_errmsg(-1));
+        print_error("elf_getshdrnum() failed: %s", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
     // get the section index of the strtab
     if(elf_getshdrstrndx(elf, &shstrndx) != 0) {
-        fprintf(stderr, "elf_getshdrstrndx() failed: %s", elf_errmsg(-1));
+        print_error("elf_getshdrstrndx() failed: %s", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
@@ -1081,20 +1083,20 @@ void show_section_headers(Elf *elf) {
         // get the section
         section = elf_getscn(elf, i);
         if(!section) {
-            fprintf(stderr, "elf_getscn() failed: %s", elf_errmsg(-1));
+            print_error("elf_getscn() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
         // get the section header
         if(!gelf_getshdr(section, &shdr)) {
-            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getshdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
         // get the section name from strtab
         name = elf_strptr(elf, shstrndx, shdr.sh_name);
         if(!name) {
-            fprintf(stderr, "elf_strptr() failed: %s", elf_errmsg(-1));
+            print_error("elf_strptr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -1340,7 +1342,7 @@ void show_dynamic_section(Elf *elf) {
 
         // get the section header
         if(!gelf_getshdr(section, &shdr)) {
-            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getshdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -1353,7 +1355,7 @@ void show_dynamic_section(Elf *elf) {
         // get data from section
         data = elf_getdata(section, data);
         if(!data) {
-            fprintf(stderr, "elf_getdata() failed: %s", elf_errmsg(-1));
+            print_error("elf_getdata() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -1363,7 +1365,7 @@ void show_dynamic_section(Elf *elf) {
 
             // get information from the dynamic table 
             if(!gelf_getdyn(data, i, &dyn)) {
-                fprintf(stderr, "gelf_getdyn() failed: %s", elf_errmsg(-1));
+                print_error("gelf_getdyn() failed: %s", elf_errmsg(-1));
                 exit(EXIT_FAILURE);
             }
 
@@ -1920,7 +1922,7 @@ void show_symtab(Elf *elf) {
 
     // get the section index of the strtab
     if(elf_getshdrstrndx(elf, &shstrndx) != 0) {
-        fprintf(stderr, "elf_getshdrstrndx() failed: %s", elf_errmsg(-1));
+        print_error("elf_getshdrstrndx() failed: %s", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
@@ -1931,7 +1933,7 @@ void show_symtab(Elf *elf) {
 
         // get the section header
         if(!gelf_getshdr(section, &shdr)) {
-            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getshdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
         // if it's not the symbol table section, skip the section
@@ -1941,7 +1943,7 @@ void show_symtab(Elf *elf) {
         // get data from section
         data = elf_getdata(section, data);
         if(!data) {
-            fprintf(stderr, "elf_getdata() failed: %s", elf_errmsg(-1));
+            print_error("elf_getdata() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -1953,7 +1955,7 @@ void show_symtab(Elf *elf) {
 
             // get information from the dynamic symbol table
             if(!gelf_getsym(data, i, &sym)) {
-                fprintf(stderr, "gelf_getsym() failed: %s", elf_errmsg(-1));
+                print_error("gelf_getsym() failed: %s", elf_errmsg(-1));
                 exit(EXIT_FAILURE);
             }
 
@@ -2108,15 +2110,15 @@ void show_symtab(Elf *elf) {
                         // get the section
                         section = elf_getscn(elf, sym.st_shndx);
                         if(!section) {
-                            fprintf(stderr, "elf_getscn() failed: %s",
-                                    elf_errmsg(-1));
+                            print_error("elf_getscn() failed: %s",
+                                        elf_errmsg(-1));
                             exit(EXIT_FAILURE);
                         }
 
                         // get the section header
                         if(!gelf_getshdr(section, &shdr)) {
-                            fprintf(stderr, "gelf_getshdr() failed: %s",
-                                    elf_errmsg(-1));
+                            print_error("gelf_getshdr() failed: %s",
+                                        elf_errmsg(-1));
                             exit(EXIT_FAILURE);
                         }
 
@@ -2156,7 +2158,7 @@ void show_dynamic_symtab(Elf *elf) {
 
         // get the section header
         if(!gelf_getshdr(section, &shdr)) {
-            fprintf(stderr, "gelf_getshdr() failed: %s", elf_errmsg(-1));
+            print_error("gelf_getshdr() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -2167,7 +2169,7 @@ void show_dynamic_symtab(Elf *elf) {
         // get data from section
         data = elf_getdata(section, data);
         if(!data) {
-            fprintf(stderr, "elf_getdata() failed: %s", elf_errmsg(-1));
+            print_error("elf_getdata() failed: %s", elf_errmsg(-1));
             exit(EXIT_FAILURE);
         }
 
@@ -2179,7 +2181,7 @@ void show_dynamic_symtab(Elf *elf) {
 
             // get information from the dynamic symbol table
             if(!gelf_getsym(data, i, &sym)) {
-                fprintf(stderr, "gelf_getsym() failed: %s", elf_errmsg(-1));
+                print_error("gelf_getsym() failed: %s", elf_errmsg(-1));
                 exit(EXIT_FAILURE);
             }
 
@@ -2413,7 +2415,7 @@ int main(int argc, char **argv) {
     }
 
     if(!argv[optind]) {
-        fprintf(stderr, "ELF file missing\n");
+        print_error("ELF file missing\n");
         exit(EXIT_FAILURE);
     }
 
@@ -2421,27 +2423,25 @@ int main(int argc, char **argv) {
 
     fd = open(filename, O_RDONLY);
     if(fd < 0) {
-        fprintf(stderr, "Cannot open %s failed: %s\n", filename,
-                strerror(errno));
+        print_error("Cannot open %s failed: %s\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     if(elf_version(EV_CURRENT) == EV_NONE) {
-        fprintf(stderr, "ELF library initialization failed: %s\n",
-                elf_errmsg(-1));
+        print_error("ELF library initialization failed: %s\n", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
     // read the elf
     elf = elf_begin(fd, ELF_C_READ, NULL);
     if(!elf) {
-        fprintf(stderr, "elf_begin() failed: %s\n", elf_errmsg(-1));
+        print_error("elf_begin() failed: %s\n", elf_errmsg(-1));
         exit(EXIT_FAILURE);
     }
 
     // check if the file is an ELF
     if(elf_kind(elf) != ELF_K_ELF) {
-        fprintf(stderr, "%s is not an ELF object\n", filename);
+        print_error("%s is not an ELF object\n", filename);
         exit(EXIT_FAILURE);
     }
 

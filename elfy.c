@@ -2400,8 +2400,8 @@ int main(int argc, char **argv) {
 
     // none of the options were used
     if(!(file_header_opt || program_headers_opt || section_headers_opt ||
-         dynamic_section_opt || symtab_opt || dynamic_symtab_opt ||
-         all_opt || color_opt || help_opt || version_opt)) {
+         dynamic_section_opt || symtab_opt || dynamic_symtab_opt || all_opt ||
+         help_opt || version_opt)) {
         usage(stderr);
         exit(EXIT_FAILURE);
     }

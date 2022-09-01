@@ -27,7 +27,7 @@ int file_header_opt,
     dynamic_section_opt,
     symtab_opt,
     dynamic_symtab_opt,
-    color_opt,
+    no_color_opt,
     help_opt,
     version_opt,
     all_opt;
@@ -40,7 +40,7 @@ const struct option long_opts[] = {
     {"symtab",          no_argument, &symtab_opt,          1},
     {"dyn-syms",        no_argument, &dynamic_symtab_opt,  1},
     {"all",             no_argument, &all_opt,             1},
-    {"color",           no_argument, &color_opt,           1},
+    {"no-color",        no_argument, &no_color_opt,        1},
     {"help",            no_argument, &help_opt,            1},
     {"version",         no_argument, &version_opt,         1},
     {0,                 0,           0,                    0}
@@ -54,12 +54,12 @@ void print_title(char *title, ...) {
     va_list args;
     va_start(args, title);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_YELLOW);
 
     vprintf(title, args);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_END);
 
     putchar('\n');
@@ -73,7 +73,7 @@ void print_title(char *title, ...) {
 void print_field(const char *field, char *value, ...) {
     int len = strlen(field);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf(C_RED "%s" C_END TAB "%*s", field, field_max_len - len, "");
     else
         printf("%s" TAB "%*s", field, field_max_len - len, "");
@@ -82,12 +82,12 @@ void print_field(const char *field, char *value, ...) {
         va_list args;
         va_start(args, value);
 
-        if(color_opt)
+        if(!no_color_opt)
             printf("%s", C_GREEN);
 
         vprintf(value, args);
 
-        if(color_opt)
+        if(!no_color_opt)
             printf("%s", C_END);
 
         putchar('\n');
@@ -99,7 +99,7 @@ void print_field(const char *field, char *value, ...) {
 // print field value and its info inside parentheses
 // e.g.: ET_DYN (shared object file)
 void print_field_info(char *value, char *info) {
-    if(color_opt)
+    if(!no_color_opt)
         printf(C_GREEN "%s" C_END " (%s)\n", value, info);
     else
         printf("%s (%s)\n", value, info);
@@ -125,7 +125,7 @@ void show_file_header(Elf *elf) {
     // magic number and other info
     print_field("e_ident", NULL);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_GREEN);
 
     for(int i = 0; i < EI_NIDENT; i++) {
@@ -135,7 +135,7 @@ void show_file_header(Elf *elf) {
             printf("%2.2x\n", ehdr.e_ident[i]);
     }
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_END);
 
     // object file type
@@ -157,7 +157,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ET_CORE", "core file");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_type);
             else
                 printf("%#x", ehdr.e_type);
@@ -717,7 +717,7 @@ void show_file_header(Elf *elf) {
             print_field_info("EM_ALPHA", "Alpha");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_machine);
             else
                 printf("%#x", ehdr.e_machine);
@@ -749,7 +749,7 @@ void show_file_header(Elf *elf) {
     // program header table entry count
     print_field("e_phnum", NULL);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_GREEN);
 
     // handle when phnum is too large to fit into e_phnum
@@ -772,7 +772,7 @@ void show_file_header(Elf *elf) {
     } else
         printf("%d\n", ehdr.e_phnum);
 
-    if(color_opt)
+    if(!no_color_opt)
         printf("%s", C_END);
 
     // section header table entry size
@@ -808,7 +808,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFCLASS64", "64-bit object");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_ident[EI_CLASS]);
             else
                 printf("%#x", ehdr.e_ident[EI_CLASS]);
@@ -829,7 +829,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFDATA2MSB", "2's complement, big endian");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_ident[EI_DATA]);
             else
                 printf("%#x", ehdr.e_ident[EI_DATA]);
@@ -847,7 +847,7 @@ void show_file_header(Elf *elf) {
             print_field_info("EV_CURRENT", "current version");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_ident[EI_VERSION]);
             else
                 printf("%#x", ehdr.e_ident[EI_VERSION]);
@@ -901,7 +901,7 @@ void show_file_header(Elf *elf) {
             print_field_info("ELFOSABI_STANDALONE", "standalone (embedded) application");
             break;
         default:
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, ehdr.e_ident[EI_OSABI]);
             else
                 printf("%#x", ehdr.e_ident[EI_OSABI]);
@@ -979,7 +979,7 @@ void show_program_headers(Elf *elf) {
                 print_field_info("PT_GNU_PROPERTY", "GNU property");
                 break;
             default:
-                if(color_opt)
+                if(!no_color_opt)
                     printf(C_GREEN "%#x" C_END, phdr.p_type);
                 else
                     printf("%#x", phdr.p_type);
@@ -1017,7 +1017,7 @@ void show_program_headers(Elf *elf) {
                 print_field_info("PF_R | PF_W | PF_X", "segment is readable, writable and executable");
                 break;
             default:
-                if(color_opt)
+                if(!no_color_opt)
                     printf(C_GREEN "%#x" C_END, phdr.p_flags);
                 else
                     printf("%#x", phdr.p_flags);
@@ -1104,7 +1104,7 @@ void show_section_headers(Elf *elf) {
 
         // section name
         print_field("sh_name", NULL);
-        if(color_opt)
+        if(!no_color_opt)
             printf(C_GREEN "%d" C_END, shdr.sh_name);
         else
             printf("%d", shdr.sh_name);
@@ -1190,7 +1190,7 @@ void show_section_headers(Elf *elf) {
                 print_field_info("SHT_GNU_versym", "version symbol table");
                 break;
             default:
-                if(color_opt)
+                if(!no_color_opt)
                     printf(C_GREEN "%#x" C_END, shdr.sh_type);
                 else
                     printf("%#x", shdr.sh_type);
@@ -1211,7 +1211,7 @@ void show_section_headers(Elf *elf) {
             int first = 1;
             unsigned long flags = shdr.sh_flags;
 
-            if(color_opt)
+            if(!no_color_opt)
                 printf("%s", C_GREEN);
 
             if(flags == 0)
@@ -1291,7 +1291,7 @@ void show_section_headers(Elf *elf) {
                 }
             }
 
-            if(color_opt)
+            if(!no_color_opt)
                 printf("%s", C_END);
 
             putchar('\n');
@@ -1477,13 +1477,13 @@ void show_dynamic_section(Elf *elf) {
                     print_field_info("DT_SYMTAB_SHNDX", "address of SYMTAB_SHNDX section");
                     break;
                 case DT_CHECKSUM:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "DT_CHECKSUM" C_END "\n");
                     else
                         puts("DT_CHECKSUM");
                     break;
                 case DT_PLTPADSZ:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "DT_PLTPADSZ" C_END "\n");
                     else
                         puts("DT_PLTPADSZ");
@@ -1495,19 +1495,19 @@ void show_dynamic_section(Elf *elf) {
                     print_field_info("DT_MOVESZ", "total size of DT_MOVETAB");
                     break;
                 case DT_VERSYM:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "DT_VERSYM" C_END "\n");
                     else
                         puts("DT_VERSYM");
                     break;
                 case DT_TLSDESC_GOT:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "DT_TLSDESC_GOT" C_END "\n");
                     else
                         puts("DT_TLSDESC_GOT");
                     break;
                 case DT_TLSDESC_PLT:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "DT_TLSDESC_PLT" C_END "\n");
                     else
                         puts("DT_TLSDESC_PLT");
@@ -1585,7 +1585,7 @@ void show_dynamic_section(Elf *elf) {
                     print_field_info("DT_FILTER", "shared object to get values from");
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%#lx" C_END, dyn.d_tag);
                     else
                         printf("%#lx", dyn.d_tag);
@@ -1604,7 +1604,7 @@ void show_dynamic_section(Elf *elf) {
                 // print library name
                 case DT_NEEDED:
                 case DT_SONAME:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%#lx" C_END, dyn.d_un.d_val);
                     else
                         printf("%#lx", dyn.d_un.d_val);
@@ -1640,7 +1640,7 @@ void show_dynamic_section(Elf *elf) {
                 case DT_SYMINENT:
                 case DT_VERDEFNUM:
                 case DT_VERNEEDNUM:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%ld\n" C_END, dyn.d_un.d_val);
                     else
                         printf("%ld\n", dyn.d_un.d_val);
@@ -1651,7 +1651,7 @@ void show_dynamic_section(Elf *elf) {
                         int first = 1;
                         unsigned long flags = dyn.d_un.d_val;
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_GREEN);
 
                         if(flags == 0)
@@ -1695,7 +1695,7 @@ void show_dynamic_section(Elf *elf) {
                             }
                         }
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_END);
 
                         putchar('\n');
@@ -1707,7 +1707,7 @@ void show_dynamic_section(Elf *elf) {
                         int first = 1;
                         unsigned long flags = dyn.d_un.d_val;
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_GREEN);
 
                         if(flags == 0)
@@ -1737,7 +1737,7 @@ void show_dynamic_section(Elf *elf) {
                             }
                         }
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_END);
 
                         putchar('\n');
@@ -1749,7 +1749,7 @@ void show_dynamic_section(Elf *elf) {
                         int first = 1;
                         unsigned long flags = dyn.d_un.d_val;
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_GREEN);
 
                         if(flags == 0)
@@ -1887,14 +1887,14 @@ void show_dynamic_section(Elf *elf) {
                             }
                         }
 
-                        if(color_opt)
+                        if(!no_color_opt)
                             printf("%s", C_END);
 
                         putchar('\n');
                     }
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%#lx\n" C_END, dyn.d_un.d_val);
                     else
                         printf("%#lx\n", dyn.d_un.d_val);
@@ -1964,7 +1964,7 @@ void show_symtab(Elf *elf) {
             // symbol name
             print_field("st_name", NULL);
 
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%d" C_END, sym.st_name);
             else
                 printf("%d", sym.st_name);
@@ -1977,7 +1977,7 @@ void show_symtab(Elf *elf) {
 
             // symbol type and binding
             print_field("st_info", NULL);
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, sym.st_info);
             else
                 printf("%#x", sym.st_info);
@@ -2060,7 +2060,7 @@ void show_symtab(Elf *elf) {
                     print_field_info("STV_PROTECTED", "not preemptible, not exported");
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%#x" C_END, GELF_ST_VISIBILITY(sym.st_other));
                     else
                         printf("%#x", GELF_ST_VISIBILITY(sym.st_other));
@@ -2091,7 +2091,7 @@ void show_symtab(Elf *elf) {
                     print_field_info("SHN_XINDEX", "index is in extra table");
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%d" C_END, sym.st_shndx);
                     else
                         printf("%d", sym.st_shndx);
@@ -2190,7 +2190,7 @@ void show_dynamic_symtab(Elf *elf) {
             // symbol name
             print_field("st_name", NULL);
 
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%d" C_END, sym.st_name);
             else
                 printf("%d", sym.st_name);
@@ -2203,7 +2203,7 @@ void show_dynamic_symtab(Elf *elf) {
 
             // symbol type and binding
             print_field("st_info", NULL);
-            if(color_opt)
+            if(!no_color_opt)
                 printf(C_GREEN "%#x" C_END, sym.st_info);
             else
                 printf("%#x", sym.st_info);
@@ -2286,7 +2286,7 @@ void show_dynamic_symtab(Elf *elf) {
                     print_field_info("STV_PROTECTED", "not preemptible, not exported");
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%#x" C_END, GELF_ST_VISIBILITY(sym.st_other));
                     else
                         printf("%#x", GELF_ST_VISIBILITY(sym.st_other));
@@ -2317,7 +2317,7 @@ void show_dynamic_symtab(Elf *elf) {
                     print_field_info("SHN_XINDEX", "index is in extra table");
                     break;
                 default:
-                    if(color_opt)
+                    if(!no_color_opt)
                         printf(C_GREEN "%d" C_END, sym.st_shndx);
                     else
                         printf("%d", sym.st_shndx);
@@ -2356,7 +2356,7 @@ void usage(FILE *stream) {
             "  --symtab               display the symbol table\n"
             "  --dyn-syms             display the dynamic symbol table\n"
             "  -a, --all              equivalent to -h -p -s -d --symtab --dyn-syms\n"
-            "  -c, --color            colored output\n"
+            "  --no-color             disable colored output\n"
             "  --help                 display this information\n"
             "  --version              display the version number of elfy\n\n"
             "Report bugs to <https://github.com/xfgusta/elfy/issues>\n");
@@ -2368,9 +2368,10 @@ int main(int argc, char **argv) {
     char *filename;
     Elf *elf;
     int fd;
+    char *no_color;
     int is_first = 1;
 
-    while((opt = getopt_long(argc, argv, "hpsdac", long_opts,
+    while((opt = getopt_long(argc, argv, "hpsda", long_opts,
                              &opt_index)) != -1) {
         switch(opt) {
             case 'h':
@@ -2387,9 +2388,6 @@ int main(int argc, char **argv) {
                 break;
             case 'a':
                 all_opt = 1;
-                break;
-            case 'c':
-                color_opt = 1;
                 break;
             case '?':
                 exit(EXIT_FAILURE);
@@ -2444,6 +2442,12 @@ int main(int argc, char **argv) {
         print_error("%s is not an ELF object\n", filename);
         exit(EXIT_FAILURE);
     }
+
+    // disable colored output when NO_COLOR is present or when the standard
+    // output isn't connected to a terminal
+    no_color = getenv("NO_COLOR");
+    if((no_color && *no_color != '\0') || !isatty(STDOUT_FILENO))
+        no_color_opt = 1;
 
     if (all_opt) {
         show_file_header(elf);

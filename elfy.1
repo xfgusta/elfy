@@ -61,8 +61,14 @@ Display the dynamic symbol table
 .IP "\fB-a\fR, \fB--all\fR"
 Equivalent to \fB-h\fR \fB-p\fR \fB-s\fR \fB-d\fR \fB--symtab\fR \fB--dyn-syms\fR
 
-.IP "\fB-c\fR, \fB--color\fR"
-Colored output
+.IP "\fB--no-color\fR"
+Disable colored output
+
+.SH ENVIRONMENT
+The behavior of \fBelfy\fR is affected by the following environment variables.
+
+.IP "\fBNO_COLOR\fR"
+When present and not an empty string (regardless of its value), prevents the addition of color.
 
 .SH AUTHOR
 Gustavo Costa <xfgusta@gmail.com>
